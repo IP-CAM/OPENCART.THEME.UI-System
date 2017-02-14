@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+    <code>csi_theme_ui_system_admin</code>
+    <name>THEME.UI.System.Admin</name>
+    <version>1.0.0</version>
+    <author>CYBERSPACE.Industries</author>
+    <link>https://cyberspace.industries</link>
+    <file path="admin/view/template/common/header.tpl">
+        <operation>
+            <search>
+                <![CDATA[<script type="text/javascript" src="view/javascript/jquery/jquery-2.1.1.min.js"></script>]]>
+            </search>
+            <add position="replace">
+                <![CDATA[<script type="text/javascript" src="//code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>]]>
+            </add>
+        </operation>
+        <operation>
+            <search>
+                <![CDATA[<script type="text/javascript" src="view/javascript/bootstrap/js/bootstrap.min.js"></script>]]>
+            </search>
+            <add position="replace">
+                <![CDATA[<script type="text/javascript" src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>]]>
+            </add>
+        </operation>
+        <operation>
+            <search>
+                <![CDATA[<link href="view/stylesheet/bootstrap.css" type="text/css" rel="stylesheet" />]]>
+            </search>
+            <add position="replace">
+                <![CDATA[<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" type="text/css" rel="stylesheet" />]]>
+            </add>
+        </operation>
+        <operation>
+            <search>
+                <![CDATA[<link href="view/javascript/font-awesome/css/font-awesome.min.css" type="text/css" rel="stylesheet" />]]>
+            </search>
+            <add position="replace">
+                <![CDATA[<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css" rel="stylesheet" />]]>
+            </add>
+        </operation>
+        <operation>
+            <search>
+                <![CDATA[</head>]]>
+            </search>
+            <add position="before">
+                <![CDATA[<link type="text/css" href="/catalog/view/theme/ui.system/stylesheet/ext.admin.css" rel="stylesheet" media="screen" />]]>
+            </add>
+        </operation>
+    </file>
+</modification>

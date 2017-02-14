@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+    <code>csi_theme_ui_system_public</code>
+    <name>THEME.UI.System.Public</name>
+    <version>1.0.0</version>
+    <author>CYBERSPACE.Industries</author>
+    <link>https://cyberspace.industries</link>
+    <file path="catalog/language/en-gb/common/footer.php">
+        <operation>
+            <search>
+                <![CDATA['Powered By <a href="http://www.opencart.com">OpenCart</a><br /> %s &copy; %s';]]>
+            </search>
+            <add position="replace">
+                <![CDATA['%s &copy; %s';]]>
+            </add>
+        </operation>
+    </file>
+    <file path="catalog/language/ru-ru/common/footer.php">
+        <operation>
+            <search>
+                <![CDATA['Работает на <a target="_blank" href="http://myopencart.com/">OpenCart</a><br /> %s &copy; %s';]]>
+            </search>
+            <add position="replace">
+                <![CDATA['%s &copy; %s';]]>
+            </add>
+        </operation>
+    </file>
+    <file path="system/library/document.php">
+        <operation>
+            <search>
+                <![CDATA[private $scripts = array();]]>
+            </search>
+            <add position="after">
+                <![CDATA[private $og_image;]]>
+            </add>
+        </operation>
+        <operation>
+            <search>
+                <![CDATA[public function getScripts($postion = 'header') {]]>
+            </search>
+            <add position="before">
+                <![CDATA[public function setOgImage($image) {
+    $this->og_image = $image;
+}
+
+public function getOgImage() {
+    return $this->og_image;
+}]]>
+            </add>
+        </operation>
+    </file>
+    <file path="catalog/controller/common/header.php">
+        <operation>
+            <search>
+                <![CDATA[$this->load->language('common/header');]]>
+            </search>
+            <add position="after">
+                <![CDATA[$data['og_url'] = (isset($this->request->server['HTTPS']) ? HTTPS_SERVER : HTTP_SERVER) . substr($this->request->server['REQUEST_URI'], 1, (strlen($this->request->server['REQUEST_URI'])-1));
+$data['og_image'] = $this->document->getOgImage();]]>
+            </add>
+        </operation>
+    </file>
+    <file path="catalog/controller/product/category.php">
+        <operation>
+            <search>
+                <![CDATA[$data['thumb'] = $this->model_tool_image->resize($category_info['image'], $this->config->get($this->config->get('config_theme') . '_image_category_width'), $this->config->get($this->config->get('config_theme') . '_image_category_height'));]]>
+            </search>
+            <add position="after">
+                <![CDATA[$this->document->setOgImage($data['thumb']);]]>
+            </add>
+        </operation>
+    </file>
+    <file path="catalog/controller/product/manufacturer.php">
+        <operation>
+            <search>
+                <![CDATA[$data['thumb'] = $this->model_tool_image->resize($manufacturer_info['image'], $this->config->get($this->config->get('config_theme') . '_image_category_width'), $this->config->get($this->config->get('config_theme') . '_image_category_height'));]]>
+            </search>
+            <add position="after">
+                <![CDATA[$this->document->setOgImage($data['thumb']);]]>
+            </add>
+        </operation>
+    </file>
+    <file path="catalog/controller/product/product.php">
+        <operation>
+            <search>
+                <![CDATA[$data['thumb'] = $this->model_tool_image->resize($product_info['image'], $this->config->get($this->config->get('config_theme') . '_image_thumb_width'), $this->config->get($this->config->get('config_theme') . '_image_thumb_height'));]]>
+            </search>
+            <add position="after">
+                <![CDATA[$this->document->setOgImage($data['thumb']);]]>
+            </add>
+        </operation>
+    </file>
+</modification>
