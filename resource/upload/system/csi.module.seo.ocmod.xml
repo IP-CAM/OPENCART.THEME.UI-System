@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+    <code>csi_module_seo</code>
+    <name>MODULE.SEO</name>
+    <version>1.0.0</version>
+    <author>CYBERSPACE.Industries</author>
+    <link>https://cyberspace.industries</link>
+    <!-- add: open graph -->
+    <file path="system/library/document.php">
+        <operation>
+            <search><![CDATA[private $scripts = array();]]></search>
+            <add position="after"><![CDATA[private $og_image;]]></add>
+        </operation>
+        <operation>
+            <search><![CDATA[public function getScripts($postion = 'header') {]]></search>
+            <add position="before"><![CDATA[public function setOgImage($image) {
+    $this->og_image = $image;
+}
+
+public function getOgImage() {
+    return $this->og_image;
+}]]></add>
+        </operation>
+    </file>
+    <file path="catalog/controller/common/header.php">
+        <operation>
+            <search><![CDATA[$this->load->language('common/header');]]></search>
+            <add position="after"><![CDATA[$data['og_url'] = (isset($this->request->server['HTTPS']) ? HTTPS_SERVER : HTTP_SERVER) . substr($this->request->server['REQUEST_URI'], 1, (strlen($this->request->server['REQUEST_URI'])-1));
+$data['og_image'] = $this->document->getOgImage();]]></add>
+        </operation>
+    </file>
+    <file path="catalog/controller/product/category.php">
+        <operation>
+            <search><![CDATA[$data['thumb'] = $this->model_tool_image->resize($category_info['image'], $this->config->get($this->config->get('config_theme') . '_image_category_width'), $this->config->get($this->config->get('config_theme') . '_image_category_height'));]]></search>
+            <add position="after"><![CDATA[$this->document->setOgImage($data['thumb']);]]></add>
+        </operation>
+    </file>
+    <file path="catalog/controller/product/manufacturer.php">
+        <operation>
+            <search><![CDATA[$data['thumb'] = $this->model_tool_image->resize($manufacturer_info['image'], $this->config->get($this->config->get('config_theme') . '_image_category_width'), $this->config->get($this->config->get('config_theme') . '_image_category_height'));]]></search>
+            <add position="after"><![CDATA[$this->document->setOgImage($data['thumb']);]]></add>
+        </operation>
+    </file>
+    <file path="catalog/controller/product/product.php">
+        <operation>
+            <search><![CDATA[$data['thumb'] = $this->model_tool_image->resize($product_info['image'], $this->config->get($this->config->get('config_theme') . '_image_thumb_width'), $this->config->get($this->config->get('config_theme') . '_image_thumb_height'));]]></search>
+            <add position="after"><![CDATA[$this->document->setOgImage($data['thumb']);]]></add>
+        </operation>
+    </file>
+    <file path="catalog/view/theme/ui.system/template/common/header.tpl">
+        <operation>
+            <search><![CDATA[</head>]]></search>
+            <add position="before"><![CDATA[<meta property="og:title" content="<?php echo $title; ?>" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="<?php echo $og_url; ?>" />
+<?php if ($og_image) { ?>
+<meta property="og:image" content="<?php echo $og_image; ?>" />
+<?php } else { ?>
+<meta property="og:image" content="<?php echo $logo; ?>" />
+<?php } ?>
+<meta property="og:site_name" content="<?php echo $name; ?>" />]]></add>
+        </operation>
+    </file>
+    <!-- / add: open graph -->
+    <!-- add: microdata -->
+    <file path="catalog/controller/product/product.php">
+        <operation>
+            <search><![CDATA[$this->load->model('tool/image');]]></search>
+            <add position="after"><![CDATA[$data['md_availability'] = $product_info['status'];
+$data['md_review_count'] = $product_info['reviews'];
+$data['md_currency'] = $this->session->data['currency'];
+$data['md_store_name'] = $this->config->get('config_name');]]></add>
+        </operation>
+        <operation>
+            <search><![CDATA[$this->model_catalog_product->updateViewed($this->request->get['product_id']);]]></search>
+            <add position="after"><![CDATA[$this->load->model('catalog/review');
+$data['text_on'] = $this->language->get('text_on');
+$data['text_no_reviews'] = $this->language->get('text_no_reviews');
+
+if (isset($this->request->get['page'])) {
+    $page = $this->request->get['page'];
+} else {
+    $page = 1;
+}
+
+$data['reviews_array'] = array();
+$review_total = $this->model_catalog_review->getTotalReviewsByProductId($product_id);
+$results = $this->model_catalog_review->getReviewsByProductId($product_id, ($page - 1) * 5, 5);
+
+foreach ($results as $result) {
+    $data['reviews_array'][] = array(
+        'author' => $result['author'],
+        'text' => strip_tags($result['text']),
+        'rating' => (int)$result['rating'],
+        'reviews' => sprintf($this->language->get('text_reviews'), (int)$review_total),
+        'date_added' => date($this->language->get('date_format_short2'), strtotime($result['date_added']))
+    );
+}
+
+$pagination = new Pagination();
+$pagination->total = $review_total;
+$pagination->page = $page;
+$pagination->limit = 5;
+$pagination->text = $this->language->get('text_pagination');
+$pagination->url = $this->url->link('product/product/review', '&product_id=' . $product_id . '&page={page}');
+$data['review_pagination'] = $pagination->render();]]></add>
+        </operation>
+        <operation>
+            <search><![CDATA['special'     => $special,]]></search>
+            <add position="after"><![CDATA['md_availability' => $result['status'],
+'md_review_count' => $result['reviews'],]]></add>
+        </operation>
+    </file>
+    <file path="catalog/language/{en-gb,ru-ru}/{en-gb,ru-ru}.php">
+        <operation>
+            <search regex="true"><![CDATA[~(.+?)(date_format_short)(.+)~]]></search>
+            <add position="replace"><![CDATA[$_['date_format_short'] = 'Y-m-d';]]></add>
+        </operation>
+    </file>
+<file path="catalog/view/theme/ui.system/template/product/product.tpl">
+        <operation>
+            <search><![CDATA[<div class="container">]]></search>
+            <add position="after"><![CDATA[<script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Product",
+    "url": "<?php if (isset($this->request->get['route'])) { echo $this->request->get['route']; } ?>",
+    "image": "<?php echo $popup; ?>",
+    "brand": "<?php echo $manufacturer; ?>",
+    "model": "<?php echo $model; ?>",
+    "description": "<?php echo strip_tags(substr($description,0,400)); ?>...",
+    "name": "<?php echo $heading_title; ?>",
+    "offers": {
+        "@type": "Offer",
+        "itemCondition": "http://schema.org/NewCondition",
+        "availability": "http://schema.org/<?php echo ($md_availability ? "InStock" : "OutOfStock") ?>",
+        "price": "<?php if( ! empty( $special ) ) { echo preg_replace( "/[^0-9.".htmlentities('&euro;')."]/", "", $special ); } else { echo preg_replace( "/[^0-9.".htmlentities('&euro;')."]/", "", $price ); } ?>",
+        "priceCurrency": "<?php echo $md_currency; ?>"
+    }
+    <?php if($rating) { ?>
+    ,"aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "<?php echo $rating; ?>",
+        "reviewCount": "<?php echo $md_review_count; ?>"
+    },
+    "review": [
+        <?php if ($reviews_array) { ?>
+        <?php foreach ($reviews_array as $i=> $review) { ?>
+        <?php if($i+1<count($reviews_array) && $md_review_count !=1) { ?>
+        {
+            "@type": "Review",
+            "author": "<?php echo $review['author']; ?>",
+            "datePublished": "<?php echo $review['date_added']; ?>",
+            "description": "<?php echo $review['text']; ?>",
+            "reviewRating": {
+                "@type": "Rating",
+                "bestRating": "5",
+                "ratingValue": "<?php echo $review['rating']; ?>",
+                "worstRating": "1"
+            }
+        },
+        <?php } else { ?>
+        {
+            "@type": "Review",
+            "author": "<?php echo $review['author']; ?>",
+            "datePublished": "<?php echo $review['date_added']; ?>",
+            "description": "<?php echo $review['text']; ?>",
+            "reviewRating": {
+                "@type": "Rating",
+                "bestRating": "5",
+                "ratingValue": "<?php echo $review['rating']; ?>",
+                "worstRating": "1"
+            }
+        }
+        <?php } ?>
+        <?php } ?>
+    ]
+    <?php } } ?>
+}
+</script>]]></add>
+        </operation>
+    </file>
+    <file path="catalog/view/theme/ui.system/template/product/{category,manufacturer_info,product,search,special}*.tpl">
+        <operation>
+            <search><![CDATA[<ul class="breadcrumb">]]></search>
+            <add position="before"><![CDATA[<script type="application/ld+json">
+{
+     "@context": "http://schema.org",
+     "@type": "BreadcrumbList",
+     "itemListElement":
+     <?php foreach ($breadcrumbs as $i=> $breadcrumb) { ?>
+     <?php if($i+1<count($breadcrumbs)) { ?>
+     [
+         {
+              "@type": "ListItem",
+              "position": <?php echo $i+1; ?>,
+              "item": {
+                   "@id": "<?php echo $breadcrumb['href']; ?>",
+                   "name": "<?php echo strip_tags($breadcrumb['text']); ?>"
+              }
+         },
+         <?php } else { ?>
+         {
+              "@type": "ListItem",
+              "position": <?php echo $i+1; ?>,
+              "item": {
+                   "@id": "<?php echo $breadcrumb['href']; ?>",
+                   "name": "<?php echo strip_tags($breadcrumb['text']); ?>"
+              }
+         }
+     ]
+     <?php } ?>
+     <?php } ?>
+}
+</script>]]></add>
+        </operation>
+    </file>
+    <!-- / add: microdata -->
+</modification>

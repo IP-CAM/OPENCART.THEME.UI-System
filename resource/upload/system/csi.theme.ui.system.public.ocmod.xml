@@ -1,93 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <modification>
     <code>csi_theme_ui_system_public</code>
-    <name>THEME.UI.System.Public</name>
+    <name>THEME.UI.System (PUBLIC)</name>
     <version>1.0.0</version>
     <author>CYBERSPACE.Industries</author>
     <link>https://cyberspace.industries</link>
-    <file path="catalog/language/en-gb/common/footer.php">
+    <!-- upgrade: css & js -->
+    <file path="catalog/view/theme/ui.system/template/common/header.tpl">
         <operation>
-            <search>
-                <![CDATA['Powered By <a href="http://www.opencart.com">OpenCart</a><br /> %s &copy; %s';]]>
-            </search>
-            <add position="replace">
-                <![CDATA['%s &copy; %s';]]>
-            </add>
+            <search><![CDATA[<head>]]></search>
+            <add position="before"><![CDATA[<?php
+$resVer = array(
+    'jquery'    => '2.2.4',
+    'bootstrap' => '3.3.7',
+    'fa'        => '4.7.0',
+);
+?>]]></add>
+        </operation>
+        <operation>
+            <search><![CDATA[<script src="catalog/view/javascript/jquery/jquery-2.1.1.min.js" type="text/javascript"></script>]]></search>
+            <add position="replace"><![CDATA[<script src="//code.jquery.com/jquery-<?php echo $resVer['jquery']; ?>.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous" type="text/javascript"></script>]]></add>
+        </operation>
+        <operation>
+            <search><![CDATA[<link href="catalog/view/javascript/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen" />]]></search>
+            <add position="replace"><![CDATA[<link href="//maxcdn.bootstrapcdn.com/bootstrap/<?php echo $resVer['bootstrap']; ?>/css/bootstrap.min.css" rel="stylesheet" media="screen" />]]></add>
+        </operation>
+        <operation>
+            <search><![CDATA[<script src="catalog/view/javascript/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>]]></search>
+            <add position="replace"><![CDATA[<script src="//maxcdn.bootstrapcdn.com/bootstrap/<?php echo $resVer['bootstrap']; ?>/js/bootstrap.min.js" type="text/javascript"></script>]]></add>
+        </operation>
+        <operation>
+            <search><![CDATA[<link href="catalog/view/javascript/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />]]></search>
+            <add position="replace"><![CDATA[<link href="//maxcdn.bootstrapcdn.com/font-awesome/<?php echo $resVer['fa']; ?>/css/font-awesome.min.css" rel="stylesheet" type="text/css" />]]></add>
+        </operation>
+        <operation>
+            <search><![CDATA[<link href="//fonts.googleapis.com/css?family=Open+Sans:400,400i,300,700" rel="stylesheet" type="text/css" />]]></search>
+            <add position="replace"><![CDATA[]]></add>
+        </operation>
+        <operation>
+            <search><![CDATA[<link href="catalog/view/theme/default/stylesheet/stylesheet.css" rel="stylesheet">]]></search>
+            <add position="replace"><![CDATA[<link href="catalog/view/theme/ui.system/stylesheet/stylesheet.css" rel="stylesheet" />]]></add>
+        </operation>
+        <operation>
+            <search><![CDATA[</head>]]></search>
+            <add position="before"><![CDATA[<link href="catalog/view/theme/ui.system/stylesheet/custom.css" rel="stylesheet" />]]></add>
         </operation>
     </file>
-    <file path="catalog/language/ru-ru/common/footer.php">
+    <!-- / upgrade: css & js -->
+    <!-- fix: "heading_title" -->
+    <file path="catalog/view/theme/ui.system/template/product/{category,manufacturer_info,special}*.tpl">
         <operation>
-            <search>
-                <![CDATA['Работает на <a target="_blank" href="http://myopencart.com/">OpenCart</a><br /> %s &copy; %s';]]>
-            </search>
-            <add position="replace">
-                <![CDATA['%s &copy; %s';]]>
-            </add>
+            <search><![CDATA[<h2><?php echo $heading_title; ?></h2>]]></search>
+            <add position="replace"><![CDATA[<h1><?php echo $heading_title; ?></h1>]]></add>
         </operation>
     </file>
-    <file path="system/library/document.php">
-        <operation>
-            <search>
-                <![CDATA[private $scripts = array();]]>
-            </search>
-            <add position="after">
-                <![CDATA[private $og_image;]]>
-            </add>
-        </operation>
-        <operation>
-            <search>
-                <![CDATA[public function getScripts($postion = 'header') {]]>
-            </search>
-            <add position="before">
-                <![CDATA[public function setOgImage($image) {
-    $this->og_image = $image;
-}
-
-public function getOgImage() {
-    return $this->og_image;
-}]]>
-            </add>
-        </operation>
-    </file>
-    <file path="catalog/controller/common/header.php">
-        <operation>
-            <search>
-                <![CDATA[$this->load->language('common/header');]]>
-            </search>
-            <add position="after">
-                <![CDATA[$data['og_url'] = (isset($this->request->server['HTTPS']) ? HTTPS_SERVER : HTTP_SERVER) . substr($this->request->server['REQUEST_URI'], 1, (strlen($this->request->server['REQUEST_URI'])-1));
-$data['og_image'] = $this->document->getOgImage();]]>
-            </add>
-        </operation>
-    </file>
-    <file path="catalog/controller/product/category.php">
-        <operation>
-            <search>
-                <![CDATA[$data['thumb'] = $this->model_tool_image->resize($category_info['image'], $this->config->get($this->config->get('config_theme') . '_image_category_width'), $this->config->get($this->config->get('config_theme') . '_image_category_height'));]]>
-            </search>
-            <add position="after">
-                <![CDATA[$this->document->setOgImage($data['thumb']);]]>
-            </add>
-        </operation>
-    </file>
-    <file path="catalog/controller/product/manufacturer.php">
-        <operation>
-            <search>
-                <![CDATA[$data['thumb'] = $this->model_tool_image->resize($manufacturer_info['image'], $this->config->get($this->config->get('config_theme') . '_image_category_width'), $this->config->get($this->config->get('config_theme') . '_image_category_height'));]]>
-            </search>
-            <add position="after">
-                <![CDATA[$this->document->setOgImage($data['thumb']);]]>
-            </add>
-        </operation>
-    </file>
-    <file path="catalog/controller/product/product.php">
-        <operation>
-            <search>
-                <![CDATA[$data['thumb'] = $this->model_tool_image->resize($product_info['image'], $this->config->get($this->config->get('config_theme') . '_image_thumb_width'), $this->config->get($this->config->get('config_theme') . '_image_thumb_height'));]]>
-            </search>
-            <add position="after">
-                <![CDATA[$this->document->setOgImage($data['thumb']);]]>
-            </add>
-        </operation>
-    </file>
+    <!-- / fix: "heading_title" -->
 </modification>

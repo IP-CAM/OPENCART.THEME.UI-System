@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+    <code>csi_module_tweaks</code>
+    <name>MODULE.Tweaks</name>
+    <version>1.0.0</version>
+    <author>CYBERSPACE.Industries</author>
+    <link>https://cyberspace.industries</link>
+    <!-- fix: remove "powered" -->
+    <file path="catalog/language/{en-gb,ru-ru}/common/footer.php">
+        <operation>
+            <search regex="true"><![CDATA[~(.+?)(text_powered)(.+)~]]></search>
+            <add position="replace"><![CDATA[$_['text_powered'] = '%s &copy; %s';]]></add>
+        </operation>
+    </file>
+    <!-- / fix: remove "powered" -->
+    <!-- fix: pagination -->
+    <file path="system/library/pagination.php">
+        <operation>
+            <search><![CDATA[$output .= '<li><a href="' . str_replace(array('&amp;page={page}', '&page={page}'), '', $this->url) . '">' . $this->text_first . '</a></li>';]]></search>
+            <add position="replace"><![CDATA[$output .= '<li><a href="' . str_replace(array('&amp;page={page}', '?page={page}', '&page={page}'), '', $this->url) . '">' . $this->text_first . '</a></li>';]]></add>
+        </operation>
+        <operation>
+            <search><![CDATA[$output .= '<li><a href="' . str_replace(array('&amp;page={page}', '&page={page}'), '', $this->url) . '">' . $this->text_prev . '</a></li>';]]></search>
+            <add position="replace"><![CDATA[$output .= '<li><a href="' . str_replace(array('&amp;page={page}', '?page={page}', '&page={page}'), '', $this->url) . '">' . $this->text_prev . '</a></li>';]]></add>
+        </operation>
+        <operation>
+            <search><![CDATA[$output .= '<li><a href="' . str_replace(array('&amp;page={page}', '&page={page}'), '', $this->url) . '">' . $i . '</a></li>';]]></search>
+            <add position="replace"><![CDATA[$output .= '<li><a href="' . str_replace(array('&amp;page={page}', '?page={page}', '&page={page}'), '', $this->url) . '">' . $i . '</a></li>';]]></add>
+        </operation>
+    </file>
+    <file path="catalog/controller/startup/startup.php">
+        <operation>
+            <search><![CDATA[$this->registry->set('openbay', new Openbay($this->registry));]]></search>
+            <add position="after"><![CDATA[// fix minus number page
+            if (isset($this->request->get['page']) && (int)$this->request->get['page'] < 1) {
+                $this->request->get['page'] = NULL;
+            }]]></add>
+        </operation>
+    </file>
+    <!-- / fix: pagination -->
+</modification>

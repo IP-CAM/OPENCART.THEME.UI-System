@@ -1,50 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <modification>
     <code>csi_theme_ui_system_admin</code>
-    <name>THEME.UI.System.Admin</name>
+    <name>THEME.UI.System (ADMIN)</name>
     <version>1.0.0</version>
     <author>CYBERSPACE.Industries</author>
     <link>https://cyberspace.industries</link>
+    <!-- upgrade: css & js -->
     <file path="admin/view/template/common/header.tpl">
         <operation>
-            <search>
-                <![CDATA[<script type="text/javascript" src="view/javascript/jquery/jquery-2.1.1.min.js"></script>]]>
-            </search>
-            <add position="replace">
-                <![CDATA[<script type="text/javascript" src="//code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>]]>
-            </add>
+            <search><![CDATA[<head>]]></search>
+            <add position="before"><![CDATA[<?php
+$resVer = array(
+    'jquery'    => '2.2.4',
+    'bootstrap' => '3.3.7',
+    'fa'        => '4.7.0',
+);
+?>]]></add>
         </operation>
         <operation>
-            <search>
-                <![CDATA[<script type="text/javascript" src="view/javascript/bootstrap/js/bootstrap.min.js"></script>]]>
-            </search>
-            <add position="replace">
-                <![CDATA[<script type="text/javascript" src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>]]>
-            </add>
+            <search><![CDATA[<script type="text/javascript" src="view/javascript/jquery/jquery-2.1.1.min.js"></script>]]></search>
+            <add position="replace"><![CDATA[<script type="text/javascript" src="//code.jquery.com/jquery-<?php echo $resVer['jquery']; ?>.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>]]></add>
         </operation>
         <operation>
-            <search>
-                <![CDATA[<link href="view/stylesheet/bootstrap.css" type="text/css" rel="stylesheet" />]]>
-            </search>
-            <add position="replace">
-                <![CDATA[<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" type="text/css" rel="stylesheet" />]]>
-            </add>
+            <search><![CDATA[<script type="text/javascript" src="view/javascript/bootstrap/js/bootstrap.min.js"></script>]]></search>
+            <add position="replace"><![CDATA[<script type="text/javascript" src="//maxcdn.bootstrapcdn.com/bootstrap/<?php echo $resVer['bootstrap']; ?>/js/bootstrap.min.js"></script>]]></add>
         </operation>
         <operation>
-            <search>
-                <![CDATA[<link href="view/javascript/font-awesome/css/font-awesome.min.css" type="text/css" rel="stylesheet" />]]>
-            </search>
-            <add position="replace">
-                <![CDATA[<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css" rel="stylesheet" />]]>
-            </add>
+            <search><![CDATA[<link href="view/stylesheet/bootstrap.css" type="text/css" rel="stylesheet" />]]></search>
+            <add position="replace"><![CDATA[<link href="//maxcdn.bootstrapcdn.com/bootstrap/<?php echo $resVer['bootstrap']; ?>/css/bootstrap.min.css" type="text/css" rel="stylesheet" />]]></add>
         </operation>
         <operation>
-            <search>
-                <![CDATA[</head>]]>
-            </search>
-            <add position="before">
-                <![CDATA[<link type="text/css" href="/catalog/view/theme/ui.system/stylesheet/ext.admin.css" rel="stylesheet" media="screen" />]]>
-            </add>
+            <search><![CDATA[<link href="view/javascript/font-awesome/css/font-awesome.min.css" type="text/css" rel="stylesheet" />]]></search>
+            <add position="replace"><![CDATA[<link href="//maxcdn.bootstrapcdn.com/font-awesome/<?php echo $resVer['fa']; ?>/css/font-awesome.min.css" type="text/css" rel="stylesheet" />]]></add>
+        </operation>
+        <operation>
+            <search><![CDATA[</head>]]></search>
+            <add position="before"><![CDATA[<link type="text/css" href="/catalog/view/theme/ui.system/stylesheet/ext.admin.css" rel="stylesheet" media="screen" />]]></add>
         </operation>
     </file>
+    <!-- / upgrade: css & js -->
+    <!-- fix: "backup" button style -->
+    <file path="admin/view/template/tool/backup.tpl">
+        <operation>
+            <search><![CDATA[<input type="file" name="import" id="input-import" />]]></search>
+            <add position="replace"><![CDATA[<input class="btn btn-default" type="file" name="import" id="input-import" />]]></add>
+        </operation>
+    </file>
+    <!-- / fix: "backup" button style -->
 </modification>
